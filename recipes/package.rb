@@ -25,11 +25,16 @@ when 'debian', 'ubuntu'
 
   # reprepro doesn't support version tagging
   # See: https://github.com/dotcloud/docker/issues/979
-  p += "-#{node['docker']['version']}" if node['docker']['version']
+  if p != 'docker-engine'
+    p += "-#{node['docker']['version']}" if node['docker']['version']
+  end
 
   package p do
     options '--force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"'
     action node['docker']['package']['action'].intern
+    if p == 'docker-engine'
+      version node['docker']['version']
+    end
   end
 when 'mac_os_x', 'mac_os_x_server'
   homebrew_tap 'homebrew/binary'
